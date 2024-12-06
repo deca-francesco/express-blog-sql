@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 
-const HOST = "http://localhost";
-const PORT = 8000;
+const HOST = process.env.HOST
+const PORT = process.env.PORT
 
 
 const cors = require('cors');

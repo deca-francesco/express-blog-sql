@@ -1,5 +1,7 @@
-const posts = require("../db/posts-db.js");
-const fs = require("fs");
+// const posts = require("../db/posts-db.js");
+// const fs = require("fs");
+
+const connection = require("../db/connection")
 
 
 // const index = (req, res) => {
