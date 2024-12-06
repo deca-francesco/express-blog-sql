@@ -207,30 +207,55 @@ const modify = (req, res) => {
 }
 
 
+// const destroy = (req, res) => {
+//     // prendo il post tramite slug
+//     const post = posts.find(post => post.slug === req.params.slug);
+
+//     // controllo se esiste, se non esiste interrompo
+//     if (!post) {
+//         return res.status(404).json({
+//             error: `404! Not found`
+//         });
+//     }
+
+//     // filtro l'array e ritorno solo i post con slug divero
+//     const postsFiltered = posts.filter(post => post.slug !== req.params.slug);
+
+//     // salvo nel file
+//     fs.writeFileSync("./db/posts-db.js",
+//         `module.exports = ${JSON.stringify(postsFiltered, null, 4)}`);
+
+//     // ritorno il nuovo array senza l'oggetto cancellato
+//     res.status(201).json({
+//         status: 201,
+//         data: postsFiltered,
+//         counter: postsFiltered.length
+//     });
+// }
+
 const destroy = (req, res) => {
-    // prendo il post tramite slug
-    const post = posts.find(post => post.slug === req.params.slug);
 
-    // controllo se esiste, se non esiste interrompo
-    if (!post) {
-        return res.status(404).json({
-            error: `404! Not found`
-        });
-    }
-
-    // filtro l'array e ritorno solo i post con slug divero
-    const postsFiltered = posts.filter(post => post.slug !== req.params.slug);
-
-    // salvo nel file
-    fs.writeFileSync("./db/posts-db.js",
-        `module.exports = ${JSON.stringify(postsFiltered, null, 4)}`);
-
-    // ritorno il nuovo array senza l'oggetto cancellato
-    res.status(201).json({
-        status: 201,
-        data: postsFiltered,
-        counter: postsFiltered.length
-    });
+    // prendo l'id dai parametri della richiesta
+    const id = req.params.id
+    // query sql
+    const sql = "DELETE FROM posts WHERE id =?"
+    //prepared statement query
+    connection.query(sql, id, (err, results) => {
+        console.log(err, results)
+        // se la query non funziona
+        if (err) return res.status(500).json({ error: err })
+        // se non abbiamo trovato risultati
+        if (results.affectedRows === 0) {
+            return res.status(404).json({
+                error: `404! Nessun post con id: ${id}`
+            })
+        }
+        // altrimenti ritorno status e numero di righe modificate
+        return res.json({
+            status: 200,
+            affectedRows: results.affectedRows
+        })
+    })
 }
 
 
