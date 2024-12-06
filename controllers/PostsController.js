@@ -33,13 +33,29 @@ const connection = require("../db/connection")
 // }
 
 
+// const index = (req, res) => {
+//     res.json({
+//         counter: posts.length,
+//         data: posts
+//     })
+// }
+
 const index = (req, res) => {
-    res.json({
-        counter: posts.length,
-        data: posts
+    const sql = "SELECT * FROM posts"
+
+    connection.query(sql, (err, results) => {
+
+        if (err) return res.json({ error: err })
+
+        console.log(results);
+
+        const responseData = {
+            counter: results.length,
+            data: results
+        }
+        res.status(200).json(responseData);
     })
 }
-
 
 
 const tagFilter = (req, res) => {
