@@ -10,7 +10,7 @@ const PostsController = require("../controllers/PostsController.js");
 router.get("/", PostsController.index, PostsController.tagFilter);
 
 // rotta show
-router.get("/:slug", PostsController.show);
+router.get("/:id", PostsController.show);
 
 // rotta store
 router.post("/", PostsController.store);

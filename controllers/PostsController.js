@@ -88,22 +88,63 @@ const tagFilter = (req, res) => {
 
 
 
+// const show = (req, res) => {
+//     // prendo il post con slug === al parametro nella query string con find
+//     const post = posts.find(post => post.slug === req.params.slug);
+//     // console.log(post);
+
+//     // blocco lo script sia se trovo il post sia se non lo trovo
+//     if (!post) {
+//         return res.status(404).json({
+//             error: `404! Not found`
+//         })
+//     }
+//     return res.status(200).json({
+//         data: post
+//     })
+
+// }
 const show = (req, res) => {
-    // prendo il post con slug === al parametro nella query string con find
-    const post = posts.find(post => post.slug === req.params.slug);
-    // console.log(post);
 
-    // blocco lo script sia se trovo il post sia se non lo trovo
-    if (!post) {
-        return res.status(404).json({
-            error: `404! Not found`
+    const id = req.params.id
+
+    const postSql = "SELECT * FROM posts WHERE id =?"
+
+    const tagsSql = `
+    SELECT tags.label
+    FROM tags
+    JOIN post_tag
+    ON post_tag.tag_id = tags.id
+    WHERE post_tag.post_id = ?
+    `
+
+    connection.query(postSql, [Number(id)], (err, results) => {
+        if (err) return res.status(500).json({ error: err })
+
+        const posts = results[0]
+
+        if (!posts) {
+            return res.status(404).json({
+                error: `404! Nessun risultato`
+            })
+        }
+
+        connection.query(tagsSql, [Number(id)], (err, tagsResults) => {
+            if (err) return res.status(500).json({ error: err })
+
+            posts.tags = tagsResults
+
+            const responseData = {
+                data: posts
+            }
+            console.log(responseData);
+            res.status(200).json(responseData)
         })
-    }
-    return res.status(200).json({
-        data: post
     })
-
 }
+
+
+
 
 
 
@@ -252,7 +293,7 @@ const destroy = (req, res) => {
         }
         // altrimenti ritorno status e numero di righe modificate
         return res.json({
-            status: 200,
+            status: 204,
             affectedRows: results.affectedRows
         })
     })
